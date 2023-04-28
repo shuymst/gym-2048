@@ -1,8 +1,10 @@
 [tool.poetry]
 name = "gym-2048"
 version = "0.1.0"
-description = ""
+description = "Gymanasium environment for the game 2048"
 authors = ["Shuhei Yamashita <yamashita-shuhei@g.ecc.u-tokyo.ac.jp>"]
+homepage = "https://github.com/shuymst"
+repository = "https://github.com/shuymst/gym-2048"
 readme = "README.md"
 packages = [{include = "gym_2048"}]
 
@@ -10,8 +12,10 @@ packages = [{include = "gym_2048"}]
 python = "^3.10"
 numpy = "^1.24.3"
 gymnasium = "^0.28.1"
-pytest = "^7.3.1"
 
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.3.1"
 
 [build-system]
 requires = ["poetry-core"]

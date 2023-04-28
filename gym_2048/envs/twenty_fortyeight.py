@@ -21,10 +21,13 @@ class TwentyFortyeight(gym.Env):
         self._random_spawn()
         self._random_spawn()
 
+        legal_actions = []
         for action in range(4):
             self._is_legal_actions[action] = self._is_changed_by(action)
+            if self._is_legal_actions[action]:
+                legal_actions.append(action)
 
-        return self._get_obs(), {}
+        return self._get_obs(), {"legal actions": legal_actions}
     
     def step(self, action):
         if action == 0:
@@ -161,14 +164,14 @@ class TwentyFortyeight(gym.Env):
         return self._get_obs(), reward, terminated, False, {"legal actions": legal_actions}
 
     def render(self):
-        s = ""
-        s += '\n'
+        print('\n'+'-'*29)
         for x in range(4):
+            print('|', end='')
             for y in range(4):
-                s += str(self._get_num(x, y))
-                s += ' '
-            s += '\n'
-        print(s)
+                print('{0: 6d}'.format(2**self._get_num(x, y)) if self._get_num(x, y) > 0 else ' ' * 6, end='')
+                print('|', end='')
+            print('\n' + '-'*29)
+        print('score: ', )
 
     def _get_obs(self):
         return self._tiles.copy()

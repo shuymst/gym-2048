@@ -4,8 +4,7 @@ Gymnasium environment for the game 2048.
 ## Installation
 ```bash
 git clone git@github.com:shuymst/gym-2048.git
-cd gym-2048
-poetry install
+poetry add ./gym-2048 --without test
 ```
 
 ## Usage
