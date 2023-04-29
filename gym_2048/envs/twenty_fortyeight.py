@@ -13,6 +13,7 @@ class TwentyFortyeight(gym.Env):
         self.action_space = spaces.Discrete(4)
         self._tiles = np.zeros(shape=(4,4), dtype=np.int32)
         self._is_legal_actions = [False for _ in range(4)]
+        self._score = 0
     
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
@@ -20,6 +21,8 @@ class TwentyFortyeight(gym.Env):
         self._tiles = np.zeros(shape=(4,4), dtype=np.int32)
         self._random_spawn()
         self._random_spawn()
+
+        self._score = 0
 
         legal_actions = []
         for action in range(4):
@@ -152,6 +155,8 @@ class TwentyFortyeight(gym.Env):
         
         if self._is_legal_actions[action]:
             self._random_spawn()
+        
+        self._score += reward
 
         terminated = True
         legal_actions = []
@@ -171,7 +176,7 @@ class TwentyFortyeight(gym.Env):
                 print('{0: 6d}'.format(2**self._get_num(x, y)) if self._get_num(x, y) > 0 else ' ' * 6, end='')
                 print('|', end='')
             print('\n' + '-'*29)
-        print('score: ', )
+        print('score: ', self._score, '\n')
 
     def _get_obs(self):
         return self._tiles.copy()
