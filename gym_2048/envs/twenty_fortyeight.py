@@ -196,8 +196,8 @@ class TwentyFortyeight(gym.Env):
     
     def _random_spawn(self):
         empty__tiles_x, empty__tiles_y = np.where(self._tiles == 0)
-        idx = np.random.choice(len(empty__tiles_x))
-        self._tiles[empty__tiles_x[idx]][empty__tiles_y[idx]] = 1 if np.random.random() > 0.1 else 2
+        idx = self.np_random.choice(len(empty__tiles_x))
+        self._tiles[empty__tiles_x[idx]][empty__tiles_y[idx]] = 1 if self.np_random.random() > 0.1 else 2
     
     def _set_legal_actions(self):
         for action in range(4):
