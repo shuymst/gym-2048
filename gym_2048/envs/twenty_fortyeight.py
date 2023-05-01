@@ -176,7 +176,7 @@ class TwentyFortyeight(gym.Env):
                 print('{0: 6d}'.format(2**self._get_num(x, y)) if self._get_num(x, y) > 0 else ' ' * 6, end='')
                 print('|', end='')
             print('\n' + '-'*29)
-        print('score: ', self._score, '\n')
+        print('score:', self._score, '\n')
 
     def _get_obs(self):
         return self._tiles.copy()
