@@ -1,15 +1,15 @@
 import numpy as np
-from gym_2048.envs import TwentyFortyeight
+from gym_2048.envs import TwentyFortyEight
 
 def test_reset():
-    env = TwentyFortyeight()
+    env = TwentyFortyEight()
     obs, _ = env.reset()
     assert obs.shape == (4,4)
     assert len(np.where(obs == 0)[0]) == 14
     assert len(np.where(obs == 0)[1]) == 14
 
 def test_get_num_spawn():
-    env = TwentyFortyeight()
+    env = TwentyFortyEight()
     for x in range(4):
         for y in range(4):
             env._spawn(x, y, x*4+y)
@@ -19,7 +19,7 @@ def test_get_num_spawn():
             assert env._get_num(x, y) == x*4+y
 
 def test_gameover():
-    env = TwentyFortyeight()
+    env = TwentyFortyEight()
     """
      1  2  3  4       1  2  3  4       1  2  3  4 
      5  6  7  8  -->  5  6  7  8  -->  5  6  7  8
@@ -37,7 +37,7 @@ def test_gameover():
     assert done
 
 def test_right():
-    env = TwentyFortyeight()
+    env = TwentyFortyEight()
     """
     0 0 1 1     0 0 0 2
     3 3 4 4 --> 0 0 4 5
@@ -56,7 +56,7 @@ def test_right():
     assert(env._get_num(3, 0)==1); assert(env._get_num(3, 1)==2); assert(env._get_num(3, 2)==3); assert(env._get_num(3, 3)==4) 
 
 def test_down():
-    env = TwentyFortyeight()
+    env = TwentyFortyEight()
     """
     0 4 1 1     0 0 0 1
     0 4 6 2 --> 0 0 1 2
@@ -75,7 +75,7 @@ def test_down():
     assert(env._get_num(3, 0)==3); assert(env._get_num(3, 1)==6); assert(env._get_num(3, 2)==7); assert(env._get_num(3, 3)==4) 
 
 def test_left():
-    env = TwentyFortyeight()
+    env = TwentyFortyEight()
     """
      0  0 12 12     13  0  0  0
     10 10 11 11 --> 11 12  0  0
@@ -94,7 +94,7 @@ def test_left():
     assert(env._get_num(3, 0)==16); assert(env._get_num(3, 1)==15); assert(env._get_num(3, 2)==14); assert(env._get_num(3, 3)==13) 
 
 def test_up():
-    env = TwentyFortyeight()
+    env = TwentyFortyEight()
     """
     0 4 1 1     3 5 1 1
     0 4 6 2 --> 0 6 7 2

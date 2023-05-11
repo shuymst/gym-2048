@@ -15,7 +15,7 @@ import random
 
 random.seed(42)
 
-env = gym.make("TwentyFortyeight-v0")
+env = gym.make("TwentyFortyEight-v0")
 observation, info = env.reset(seed=42)
 while True:
     action = random.choice(info['legal actions'])

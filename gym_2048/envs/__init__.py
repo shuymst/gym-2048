@@ -1,2 +1,2 @@
-from gym_2048.envs.twenty_fortyeight import TwentyFortyeight
-TwentyFortyeight._calculate_right_action()
+from gym_2048.envs.twenty_fortyeight import TwentyFortyEight
+TwentyFortyEight._calculate_right_action()

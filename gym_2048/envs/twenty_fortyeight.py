@@ -5,7 +5,7 @@ from gymnasium import spaces
 right_action_results = np.zeros(shape=(18**4,), dtype=np.int32)
 right_action_scores = np.zeros(shape=(18**4,), dtype=np.int32)
 
-class TwentyFortyeight(gym.Env):
+class TwentyFortyEight(gym.Env):
 
     def __init__(self, render_mode=None):
 
