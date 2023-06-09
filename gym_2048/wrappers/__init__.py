@@ -1,1 +1,2 @@
+from gym_2048.wrappers.conv_observation import ConvObservation
 from gym_2048.wrappers.step_reward import StepReward
