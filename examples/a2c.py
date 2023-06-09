@@ -125,7 +125,7 @@ class A2C(nn.Module):
 # wandb.init("A2C")
 
 n_envs = 10
-n_updates = 20
+n_updates = 10000
 n_steps_per_update = 128
 
 gamma = 0.999
@@ -136,7 +136,7 @@ critic_lr = 0.005
 
 envs = gym.vector.make("TwentyFortyEight-v0", num_envs=n_envs, wrappers=ConvObservation)
 
-device = torch.device("cpu")
+device = torch.device("cuda")
 
 agent = A2C(device, critic_lr, actor_lr, n_envs)
 
@@ -184,7 +184,7 @@ for sample_phase in tqdm(range(n_updates)):
     entropies.append(entropy.detach().mean().cpu().numpy())
 
 
-rolling_length = 10000
+rolling_length = 20
 fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(12, 5))
 
 # episode return
