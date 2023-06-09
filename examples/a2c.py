@@ -59,8 +59,8 @@ class A2C(nn.Module):
         self.device = device
         self.n_envs = n_envs
         
-        self.actor = PolicyNetwork()
-        self.critic = ValueNetwork()
+        self.actor = PolicyNetwork().to(device)
+        self.critic = ValueNetwork().to(device)
 
         self.actor_optim = optim.Adam(params=self.actor.parameters(), lr=actor_lr)
         self.critic_optim = optim.Adam(params=self.critic.parameters(), lr=critic_lr)
