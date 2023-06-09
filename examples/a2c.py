@@ -81,8 +81,9 @@ class A2C(nn.Module):
 
         for i in range(batch_size):
             action_pd = torch.distributions.Categorical(logits=action_logits[i][legal_actions[i]])
-            selected_actions[i] = action_pd.sample()
-            action_logprobs[i] = action_pd.log_prob(selected_actions[i])
+            selected_action_index = action_pd.sample()
+            selected_actions[i] = legal_actions[i][selected_action_index]
+            action_logprobs[i] = action_pd.log_prob(selected_action_index)
             entropy[i] = action_pd.entropy()
 
         return selected_actions, action_logprobs, state_values, entropy
