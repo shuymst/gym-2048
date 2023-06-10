@@ -111,3 +111,69 @@ def test_up():
     assert(env._get_num(1, 0)==0); assert(env._get_num(1, 1)==6); assert(env._get_num(1, 2)==7); assert(env._get_num(1, 3)==2) 
     assert(env._get_num(2, 0)==0); assert(env._get_num(2, 1)==0); assert(env._get_num(2, 2)==7); assert(env._get_num(2, 3)==3) 
     assert(env._get_num(3, 0)==0); assert(env._get_num(3, 1)==0); assert(env._get_num(3, 2)==0); assert(env._get_num(3, 3)==4) 
+
+def test_calculate_afterstate_reward():
+    env = TwentyFortyEight()
+    """
+    0 4 1 1     
+    0 4 6 2  
+    2 5 6 6    
+    2 5 7 4 
+    """
+    env._spawn(0, 0, 0); env._spawn(0, 1, 4); env._spawn(0, 2, 1); env._spawn(0, 3, 1)
+    env._spawn(1, 0, 0); env._spawn(1, 1, 4); env._spawn(1, 2, 6); env._spawn(1, 3, 2)
+    env._spawn(2, 0, 2); env._spawn(2, 1, 5); env._spawn(2, 2, 6); env._spawn(2, 3, 6)
+    env._spawn(3, 0, 2); env._spawn(3, 1, 5); env._spawn(3, 2, 7); env._spawn(3, 3, 4)
+    
+    afterstates, rewards = env._calculate_afterstate_reward([0,1,2,3])
+
+    assert len(afterstates) == 4
+    assert len(rewards) == 4
+
+    """
+    0 0 4 2     
+    0 4 6 2  
+    0 2 5 7    
+    2 5 7 4 
+    """
+    assert(afterstates[0][0][0]==0); assert(afterstates[0][0][1]==0); assert(afterstates[0][0][2]==4); assert(afterstates[0][0][3]==2)
+    assert(afterstates[0][1][0]==0); assert(afterstates[0][1][1]==4); assert(afterstates[0][1][2]==6); assert(afterstates[0][1][3]==2)
+    assert(afterstates[0][2][0]==0); assert(afterstates[0][2][1]==2); assert(afterstates[0][2][2]==5); assert(afterstates[0][2][3]==7)
+    assert(afterstates[0][3][0]==2); assert(afterstates[0][3][1]==5); assert(afterstates[0][3][2]==7); assert(afterstates[0][3][3]==4)
+    assert rewards[0] == 2**2+2**7
+
+    """
+    0 0 0 1     
+    0 0 1 2  
+    0 5 7 6    
+    3 6 7 4 
+    """
+    assert(afterstates[1][0][0]==0); assert(afterstates[1][0][1]==0); assert(afterstates[1][0][2]==0); assert(afterstates[1][0][3]==1)
+    assert(afterstates[1][1][0]==0); assert(afterstates[1][1][1]==0); assert(afterstates[1][1][2]==1); assert(afterstates[1][1][3]==2)
+    assert(afterstates[1][2][0]==0); assert(afterstates[1][2][1]==5); assert(afterstates[1][2][2]==7); assert(afterstates[1][2][3]==6)
+    assert(afterstates[1][3][0]==3); assert(afterstates[1][3][1]==6); assert(afterstates[1][3][2]==7); assert(afterstates[1][3][3]==4)
+    assert rewards[1] == 2**3+2**5+2**6+2**7
+
+    """
+    4 2 0 0     
+    4 6 2 0  
+    2 5 7 0    
+    2 5 7 4 
+    """
+    assert(afterstates[2][0][0]==4); assert(afterstates[2][0][1]==2); assert(afterstates[2][0][2]==0); assert(afterstates[2][0][3]==0)
+    assert(afterstates[2][1][0]==4); assert(afterstates[2][1][1]==6); assert(afterstates[2][1][2]==2); assert(afterstates[2][1][3]==0)
+    assert(afterstates[2][2][0]==2); assert(afterstates[2][2][1]==5); assert(afterstates[2][2][2]==7); assert(afterstates[2][2][3]==0)
+    assert(afterstates[2][3][0]==2); assert(afterstates[2][3][1]==5); assert(afterstates[2][3][2]==7); assert(afterstates[2][3][3]==4)
+    assert rewards[2] == 2**2+2**7
+
+    """
+    3 5 1 1     
+    0 6 7 2  
+    0 0 7 6    
+    0 0 0 4 
+    """
+    assert(afterstates[3][0][0]==3); assert(afterstates[3][0][1]==5); assert(afterstates[3][0][2]==1); assert(afterstates[3][0][3]==1)
+    assert(afterstates[3][1][0]==0); assert(afterstates[3][1][1]==6); assert(afterstates[3][1][2]==7); assert(afterstates[3][1][3]==2)
+    assert(afterstates[3][2][0]==0); assert(afterstates[3][2][1]==0); assert(afterstates[3][2][2]==7); assert(afterstates[3][2][3]==6)
+    assert(afterstates[3][3][0]==0); assert(afterstates[3][3][1]==0); assert(afterstates[3][3][2]==0); assert(afterstates[3][3][3]==4)
+    assert rewards[3] == 2**3+2**5+2**6+2**7

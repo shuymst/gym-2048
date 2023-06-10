@@ -7,13 +7,14 @@ right_action_scores = np.zeros(shape=(18**4,), dtype=np.int32)
 
 class TwentyFortyEight(gym.Env):
 
-    def __init__(self, render_mode=None):
+    def __init__(self, render_mode=None, afterstate=False):
 
         self.observation_space = spaces.MultiDiscrete(np.array([[18 for _ in range(4)] for _ in range(4)]))
         self.action_space = spaces.Discrete(4)
         self._tiles = np.zeros(shape=(4,4), dtype=np.int32)
         self._is_legal_actions = [False for _ in range(4)]
         self._score = 0
+        self.afterstate = afterstate
     
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
@@ -29,7 +30,11 @@ class TwentyFortyEight(gym.Env):
             self._is_legal_actions[action] = self._is_changed_by(action)
             if self._is_legal_actions[action]:
                 legal_actions.append(action)
-
+        
+        if self.afterstate:
+            afterstates, rewards = self._calculate_afterstate_reward(legal_actions)
+            return self._get_obs(), {"legal actions": legal_actions, "afterstates": afterstates, "rewards": rewards}
+        
         return self._get_obs(), {"legal actions": legal_actions}
     
     def step(self, action):
@@ -165,8 +170,12 @@ class TwentyFortyEight(gym.Env):
             if self._is_changed_by(next_action):
                 terminated = False
                 legal_actions.append(next_action)
+        
+        if self.afterstate:
+            afterstates, rewards = self._calculate_afterstate_reward(legal_actions)
+            return self._get_obs(), reward, terminated, False, {"legal actions": legal_actions, "afterstates": afterstates, "rewards": rewards}
 
-        return self._get_obs(), reward, terminated, False, {"legal actions": legal_actions}
+        return self._get_obs(), {"legal actions": legal_actions}
 
     def render(self):
         print('\n'+'-'*29)
@@ -276,3 +285,132 @@ class TwentyFortyEight(gym.Env):
             return self._is_changed_by_right(np.rot90(self._tiles, 3))
         else:
             return False
+
+    def _calculate_afterstate_reward(self, legal_actions):
+
+        afterstates = np.zeros(shape=(len(legal_actions), 4, 4), dtype=np.int32)
+        rewards = np.zeros((len(legal_actions,)))
+
+        for i in range(len(legal_actions)):
+
+            if legal_actions[i] == 0:
+                row_0 = self._row_to_hash(self._tiles[0])
+                row_1 = self._row_to_hash(self._tiles[1])
+                row_2 = self._row_to_hash(self._tiles[2])
+                row_3 = self._row_to_hash(self._tiles[3])
+
+                result_row_0 = right_action_results[row_0]
+                result_row_1 = right_action_results[row_1]
+                result_row_2 = right_action_results[row_2]
+                result_row_3 = right_action_results[row_3]
+
+                afterstates[i][0][0] = result_row_0 % 18
+                afterstates[i][0][1] = result_row_0 // 18 % 18
+                afterstates[i][0][2] = result_row_0 // (18**2) % 18
+                afterstates[i][0][3] = result_row_0 // (18**3) % 18
+                afterstates[i][1][0] = result_row_1 % 18
+                afterstates[i][1][1] = result_row_1 // 18 % 18
+                afterstates[i][1][2] = result_row_1 // (18**2) % 18
+                afterstates[i][1][3] = result_row_1 // (18**3) % 18
+                afterstates[i][2][0] = result_row_2 % 18
+                afterstates[i][2][1] = result_row_2 // 18 % 18
+                afterstates[i][2][2] = result_row_2 // (18**2) % 18
+                afterstates[i][2][3] = result_row_2 // (18**3) % 18
+                afterstates[i][3][0] = result_row_3 % 18
+                afterstates[i][3][1] = result_row_3 // 18 % 18
+                afterstates[i][3][2] = result_row_3 // (18**2) % 18
+                afterstates[i][3][3] = result_row_3 // (18**3) % 18
+
+                rewards[i] = right_action_scores[row_0] + right_action_scores[row_1] + right_action_scores[row_2] + right_action_scores[row_3]
+        
+            elif legal_actions[i] == 1:
+                col_0 = self._row_to_hash(self._tiles[:,0])
+                col_1 = self._row_to_hash(self._tiles[:,1])
+                col_2 = self._row_to_hash(self._tiles[:,2])
+                col_3 = self._row_to_hash(self._tiles[:,3])
+
+                result_col_0 = right_action_results[col_0]
+                result_col_1 = right_action_results[col_1]
+                result_col_2 = right_action_results[col_2]
+                result_col_3 = right_action_results[col_3]
+
+                afterstates[i][0][0] = result_col_0 % 18
+                afterstates[i][1][0] = result_col_0 // 18 % 18
+                afterstates[i][2][0] = result_col_0 // (18**2) % 18
+                afterstates[i][3][0] = result_col_0 // (18**3) % 18
+                afterstates[i][0][1] = result_col_1 % 18
+                afterstates[i][1][1] = result_col_1 // 18 % 18
+                afterstates[i][2][1] = result_col_1 // (18**2) % 18
+                afterstates[i][3][1] = result_col_1 // (18**3) % 18
+                afterstates[i][0][2] = result_col_2 % 18
+                afterstates[i][1][2] = result_col_2 // 18 % 18
+                afterstates[i][2][2] = result_col_2 // (18**2) % 18
+                afterstates[i][3][2] = result_col_2 // (18**3) % 18
+                afterstates[i][0][3] = result_col_3 % 18
+                afterstates[i][1][3] = result_col_3 // 18 % 18
+                afterstates[i][2][3] = result_col_3 // (18**2) % 18
+                afterstates[i][3][3] = result_col_3 // (18**3) % 18
+
+                rewards[i] = right_action_scores[col_0] + right_action_scores[col_1] + right_action_scores[col_2] + right_action_scores[col_3]
+
+            elif legal_actions[i] == 2:
+                row_0 = self._row_to_hash(self._tiles[0][::-1])
+                row_1 = self._row_to_hash(self._tiles[1][::-1])
+                row_2 = self._row_to_hash(self._tiles[2][::-1])
+                row_3 = self._row_to_hash(self._tiles[3][::-1])
+
+                result_row_0 = right_action_results[row_0]
+                result_row_1 = right_action_results[row_1]
+                result_row_2 = right_action_results[row_2]
+                result_row_3 = right_action_results[row_3]
+
+                afterstates[i][0][3] = result_row_0 % 18
+                afterstates[i][0][2] = result_row_0 // 18 % 18
+                afterstates[i][0][1] = result_row_0 // (18**2) % 18
+                afterstates[i][0][0] = result_row_0 // (18**3) % 18
+                afterstates[i][1][3] = result_row_1 % 18
+                afterstates[i][1][2] = result_row_1 // 18 % 18
+                afterstates[i][1][1] = result_row_1 // (18**2) % 18
+                afterstates[i][1][0] = result_row_1 // (18**3) % 18
+                afterstates[i][2][3] = result_row_2 % 18
+                afterstates[i][2][2] = result_row_2 // 18 % 18
+                afterstates[i][2][1] = result_row_2 // (18**2) % 18
+                afterstates[i][2][0] = result_row_2 // (18**3) % 18
+                afterstates[i][3][3] = result_row_3 % 18
+                afterstates[i][3][2] = result_row_3 // 18 % 18
+                afterstates[i][3][1] = result_row_3 // (18**2) % 18
+                afterstates[i][3][0] = result_row_3 // (18**3) % 18
+
+                rewards[i] = right_action_scores[row_0] + right_action_scores[row_1] + right_action_scores[row_2] + right_action_scores[row_3]
+            
+            elif legal_actions[i] == 3:
+                col_0 = self._row_to_hash(self._tiles[:,0][::-1])
+                col_1 = self._row_to_hash(self._tiles[:,1][::-1])
+                col_2 = self._row_to_hash(self._tiles[:,2][::-1])
+                col_3 = self._row_to_hash(self._tiles[:,3][::-1])
+
+                result_col_0 = right_action_results[col_0]
+                result_col_1 = right_action_results[col_1]
+                result_col_2 = right_action_results[col_2]
+                result_col_3 = right_action_results[col_3]
+
+                afterstates[i][3][0] = result_col_0 % 18
+                afterstates[i][2][0] = result_col_0 // 18 % 18
+                afterstates[i][1][0] = result_col_0 // (18**2) % 18
+                afterstates[i][0][0] = result_col_0 // (18**3) % 18
+                afterstates[i][3][1] = result_col_1 % 18
+                afterstates[i][2][1] = result_col_1 // 18 % 18
+                afterstates[i][1][1] = result_col_1 // (18**2) % 18
+                afterstates[i][0][1] = result_col_1 // (18**3) % 18
+                afterstates[i][3][2] = result_col_2 % 18
+                afterstates[i][2][2] = result_col_2 // 18 % 18
+                afterstates[i][1][2] = result_col_2 // (18**2) % 18
+                afterstates[i][0][2] = result_col_2 // (18**3) % 18
+                afterstates[i][3][3] = result_col_3 % 18
+                afterstates[i][2][3] = result_col_3 // 18 % 18
+                afterstates[i][1][3] = result_col_3 // (18**2) % 18
+                afterstates[i][0][3] = result_col_3 // (18**3) % 18
+
+                rewards[i] = right_action_scores[col_0] + right_action_scores[col_1] + right_action_scores[col_2] + right_action_scores[col_3]
+
+        return afterstates, rewards
